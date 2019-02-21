@@ -90,37 +90,49 @@ private:
         sf::Vector2f movement(0.f, 0.f);
         if (mIsMovingUp) {
             speed.y -= acceleration.y;
-            movement.y += speed.y;
+            if (!mIsMovingDown || movement.y > 0) {
+                movement.y += speed.y;
+            }
         }
 
         if (mIsMovingDown) {
             speed.y += acceleration.y;
-            movement.y += speed.y;
+            if (!mIsMovingUp || movement.y < 0) {
+                movement.y += speed.y;
+            }
         }
 
         if (mIsMovingLeft) {
             speed.x -= acceleration.x;
-            movement.x += speed.x;
+            if (!mIsMovingRight || movement.x < 0) {
+                movement.x += speed.x;
+            }
         }
 
         if (mIsMovingRight) {
             speed.x += acceleration.x;
-            movement.x += speed.x;
+            if (!mIsMovingLeft || movement.x > 0) {
+                movement.x += speed.x;
+            }
         }
 
-        if (speed.y != 0.f && !(mIsMovingDown || mIsMovingUp)) {
+        if (speed.y != 0.f && (mIsMovingDown == mIsMovingUp)) {
             speed.y = speed.y + (speed.y > 0 ? -1.f : 1.f) * friction.y;
             movement.y += speed.y;
         }
 
-        if (speed.x != 0.f && !(mIsMovingLeft || mIsMovingRight)) {
+        if (speed.x != 0.f && (mIsMovingLeft == mIsMovingRight)) {
             speed.x = speed.x + (speed.x > 0 ? -1.f : 1.f) * friction.x;
             movement.x += speed.x;
         }
 
         if (movement.x != 0.f || movement.y != 0) {
             float rotation = mPlayer.getRotation();
-            rotation += movement.x / 60.f + movement.y / 60.f;
+            float xBy60 = movement.x / 60;
+            float yBy60 = movement.y / 60;
+
+            rotation += xBy60 + yBy60;
+
             mPlayer.setRotation(rotation);
         }
 
